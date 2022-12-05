@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<xmile version="1.0" xmlns="http://docs.oasis-open.org/xmile/ns/XMILE/v1.0">
+    <header>
+        <product version="1.0" lang="en">Vensim</product>
+        <vendor>Ventana Systems, Inc.</vendor>
+        <created>
+        </created>
+        <modified>
+        </modified>
+        <name>
+        </name>
+        <caption>
+        </caption>
+    </header>
+    <sim_specs method="RK4" time_units="Week">
+        <start>0</start>
+        <stop>100</stop>
+        <dt>1</dt>
+    </sim_specs>
+    <model>
+        <variables>
+            <stock name="Distributor_inventory">
+                <units>box</units>
+                <doc></doc>
+                <eqn>
+                    12
+                </eqn>
+                <inflow>
+                    Manufacturer_delivery_rate
+                </inflow>
+                <outflow>
+                    Distributor_delivery_rate
+                </outflow>
+            </stock>
+            <stock name="Manufacturer_invenroty">
+                <units>box</units>
+                <doc></doc>
+                <eqn>
+                    12
+                </eqn>
+                <inflow>
+                    Production_rate
+                </inflow>
+                <outflow>
+                    Manufacturer_delivery_rate
+                </outflow>
+            </stock>
+            <stock name="Retailer_inventory">
+                <units>box</units>
+                <doc></doc>
+                <eqn>
+                    12
+                </eqn>
+                <inflow>
+                    Whosaler_delivery_rate
+                </inflow>
+                <outflow>
+                    Market_demand_rate
+                </outflow>
+            </stock>
+            <stock name="Wholesaler_inventory">
+                <units>box</units>
+                <doc></doc>
+                <eqn>
+                    12
+                </eqn>
+                <inflow>
+                    Distributor_delivery_rate
+                </inflow>
+                <outflow>
+                    Whosaler_delivery_rate
+                </outflow>
+            </stock>
+            <aux name="Distributor_delivery_rate">
+                <units>box/Week</units>
+                <doc></doc>
+                <eqn>
+                    DELAY3(Wholesasler_order, Distributor_delivey_delay)
+                </eqn>
+            </aux>
+            <aux name="Distributor_order">
+                <units>box/Week</units>
+                <doc></doc>
+                <eqn>
+                    MAX(Supplier_sales_forecast+Distributor's_expected_inventory/Distributor_SAT-Distributor_inventory/Distributor_SAT , 0 )
+                </eqn>
+            </aux>
+            <aux name="Distributor's_expected_inventory">
+                <units>box</units>
+                <doc></doc>
+                <eqn>
+                    Distributor_expects_gain_delay*Supplier_sales_forecast
+                </eqn>
+            </aux>
+            <aux name="Manufacturer_delivery_rate">
+                <units>box/Week</units>
+                <doc></doc>
+                <eqn>
+                    DELAY3(Distributor_order, Manufacturer_delivery_delay)
+                </eqn>
+            </aux>
+            <aux name="Manufacturer_expected_inventory">
+                <units>box</units>
+                <doc></doc>
+                <eqn>
+                    Production_expectation_gain_delay*Manufacturer's_sales_forecast
+                </eqn>
+            </aux>
+            <aux name="Manufacturer's_production_demand">
+                <units>box/Week</units>
+                <doc></doc>
+                <eqn>
+                    MAX(Manufacturer's_sales_forecast+Manufacturer_expected_inventory/Manufacturer_SAT-Manufacturer_invenroty/Manufacturer_SAT , 0 )
+                </eqn>
+            </aux>
+            <aux name="Manufacturer's_sales_forecast">
+                <units>box/Week</units>
+                <doc></doc>
+                <eqn>
+                    SMTH1( Distributor_order , Manufacturer_predicts_smoothing_time )
+                </eqn>
+            </aux>
+            <aux name="Market_demand_rate">
+                <units>box/Week</units>
+                <doc></doc>
+                <eqn>
+                    IF_THEN_ELSE( Time>4 , 8 , 4 )
+                </eqn>
+            </aux>
+            <aux name="Production_rate">
+                <units>box/Week</units>
+                <doc></doc>
+                <eqn>
+                    DELAY3(Manufacturer's_production_demand, Production_delay)
+                </eqn>
+            </aux>
+            <aux name="Retailer_sales_forecast">
+                <units>box/Week</units>
+                <doc></doc>
+                <eqn>
+                    SMTH1( Market_demand_rate , Retailers_predict_smoothing_time )
+                </eqn>
+            </aux>
+            <aux name="Retailers_expect_inventory">
+                <units>box</units>
+                <doc></doc>
+                <eqn>
+                    Retailer_expects_gain_delay*Retailer_sales_forecast
+                </eqn>
+            </aux>
+            <aux name="Retailers_order">
+                <units>box/Week</units>
+                <doc></doc>
+                <eqn>
+                    MAX(Retailer_sales_forecast+Retailers_expect_inventory/Retailer_SAT-Retailer_inventory/Retailer_SAT , 0 )
+                </eqn>
+            </aux>
+            <aux name="Supplier_sales_forecast">
+                <units>box/Week</units>
+                <doc></doc>
+                <eqn>
+                    SMTH1( Wholesasler_order , Supplier_forecast_smoothing_time )
+                </eqn>
+            </aux>
+            <aux name="Wholesaler_sales_forecast">
+                <units>box/Week</units>
+                <doc></doc>
+                <eqn>
+                    SMTH1( Retailers_order , Wholesaler_predicts_smoothing_time )
+                </eqn>
+            </aux>
+            <aux name="Wholesalers_expects_inventory">
+                <units>box</units>
+                <doc></doc>
+                <eqn>
+                    Wholesaler_expects_gain_delay*Wholesaler_sales_forecast
+                </eqn>
+            </aux>
+            <aux name="Wholesasler_order">
+                <units>box/Week</units>
+                <doc></doc>
+                <eqn>
+                    MAX(Wholesaler_sales_forecast+Wholesalers_expects_inventory/Wholesaler_SAT-Wholesaler_inventory/Wholesaler_SAT , 0 )
+                </eqn>
+            </aux>
+            <aux name="Whosaler_delivery_rate">
+                <units>box/Week</units>
+                <doc></doc>
+                <eqn>
+                    DELAY3(Retailers_order, Whosaler_delivery_delay )
+                </eqn>
+            </aux>
+            <aux name="Distributor_delivey_delay">
+                <units>Week</units>
+                <doc></doc>
+                <eqn>
+                    3
+                </eqn>
+            </aux>
+            <aux name="Distributor_expects_gain_delay">
+                <units>Week</units>
+                <doc></doc>
+                <eqn>
+                    3
+                </eqn>
+            </aux>
+            <aux name="Distributor_SAT">
+                <units>Week</units>
+                <doc></doc>
+                <eqn>
+                    3.85
+                </eqn>
+            </aux>
+            <aux name="Manufacturer_delivery_delay">
+                <units>Week</units>
+                <doc></doc>
+                <eqn>
+                    3
+                </eqn>
+            </aux>
+            <aux name="Manufacturer_predicts_smoothing_time">
+                <units>Week</units>
+                <doc></doc>
+                <eqn>
+                    1.82
+                </eqn>
+            </aux>
+            <aux name="Manufacturer_SAT">
+                <units>Week</units>
+                <doc></doc>
+                <eqn>
+                    3.85
+                </eqn>
+            </aux>
+            <aux name="Production_delay">
+                <units>Week</units>
+                <doc></doc>
+                <eqn>
+                    3
+                </eqn>
+            </aux>
+            <aux name="Production_expectation_gain_delay">
+                <units>Week</units>
+                <doc></doc>
+                <eqn>
+                    3
+                </eqn>
+            </aux>
+            <aux name="Retailer_expects_gain_delay">
+                <units>Week</units>
+                <doc></doc>
+                <eqn>
+                    3
+                </eqn>
+            </aux>
+            <aux name="Retailer_SAT">
+                <units>Week</units>
+                <doc></doc>
+                <eqn>
+                    3.85
+                </eqn>
+            </aux>
+            <aux name="Retailers_predict_smoothing_time">
+                <units>Week</units>
+                <doc></doc>
+                <eqn>
+                    1.82
+                </eqn>
+            </aux>
+            <aux name="Supplier_forecast_smoothing_time">
+                <units>Week</units>
+                <doc></doc>
+                <eqn>
+                    1.82
+                </eqn>
+            </aux>
+            <aux name="Wholesaler_expects_gain_delay">
+                <units>Week</units>
+                <doc></doc>
+                <eqn>
+                    3
+                </eqn>
+            </aux>
+            <aux name="Wholesaler_predicts_smoothing_time">
+                <units>Week</units>
+                <doc></doc>
+                <eqn>
+                    1.82
+                </eqn>
+            </aux>
+            <aux name="Wholesaler_SAT">
+                <units>Week</units>
+                <doc></doc>
+                <eqn>
+                    3.85
+                </eqn>
+            </aux>
+            <aux name="Whosaler_delivery_delay">
+                <units>Week</units>
+                <doc></doc>
+                <eqn>
+                    3
+                </eqn>
+            </aux>
+        </variables>
+    </model>
+</xmile>
